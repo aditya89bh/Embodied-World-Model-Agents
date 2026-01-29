@@ -318,3 +318,51 @@ if __name__ == "__main__":
 # -------------------------
 # tests.py
 # -------------------------
+
+write(f"{ROOT}/tests.py", """
+from __future__ import annotations
+from perception import get_local_observation
+from encoder import init_belief, update_belief, build_world_state
+
+def test_belief_updates():
+    grid = [
+        list(".."),
+        list(".#"),
+    ]
+    agent_pos = (0, 0)
+    known_map, conf_map = init_belief((2, 2))
+
+    obs = get_local_observation(grid, agent_pos, radius=1, timestep=0)
+    update_belief(known_map, conf_map, obs.visible)
+
+    ws = build_world_state(
+        agent_position=agent_pos,
+        grid_size=obs.grid_size,
+        known_map=known_map,
+        conf_map=conf_map,
+        timestep=0,
+        source="test",
+    )
+
+    assert ws.environment.grid_size == (2, 2)
+    assert conf_map[0][0] == 1.0
+    assert ws.uncertainty.confidence_map[0][0] == 1.0
+    assert (1, 1) in ws.environment.known_obstacles
+
+if __name__ == "__main__":
+    test_belief_updates()
+    print("✅ tests passed")
+""")
+
+# -------------------------
+# Run demo + tests
+# -------------------------
+print(f"✅ Project files created in: {ROOT}/")
+print("Running quick tests...")
+import subprocess, sys, pathlib
+
+# Run tests
+subprocess.check_call([sys.executable, f"{ROOT}/tests.py"])
+
+print("\nRunning demo...\n")
+subprocess.check_call([sys.executable, f"{ROOT}/examples.py"])
