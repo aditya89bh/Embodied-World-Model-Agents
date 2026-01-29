@@ -125,3 +125,72 @@ Memory retrieval becomes context-aware:
 This tightly couples world-models with memory agents.
 
 ---
+
+### Project E6 – Reality Mismatch & Model Update
+**Learning from Being Wrong**
+
+Detect gaps between:
+- predicted next state
+- actual next state
+
+Log:
+- blind spots
+- model errors
+- unreliable assumptions
+
+Trigger reflection, caution, or model updates.
+
+This is embodied introspection.
+
+---
+
+### Project E7 – Goal Formation from World Feedback
+**Why the Agent Cares**
+
+Goals are not hardcoded.
+
+They emerge from:
+- repeated rewards
+- constraints
+- survival pressure
+- long-term outcomes
+
+The agent learns what matters by interacting with reality.
+
+---
+
+## What This Repository Is Not
+
+- Not a robotics hardware repo
+- Not a game AI repo
+- Not an RL benchmark zoo
+- Not a demo-first project
+
+This is a **conceptual and implementation-level study of embodied intelligence**.
+
+---
+
+## How to Use This Repo
+
+- Each project is standalone
+- Projects are meant to be built sequentially
+- Earlier abstractions are reused, not rewritten
+- Evaluation is explicit and documented
+
+This repo is designed to:
+- support workshops
+- enable consulting
+- act as a research playground
+- serve as a foundation for physical AGI systems
+
+---
+
+## Long-Term Vision
+
+Memory → Reasoning → World Models → Embodiment → Physical AGI
+
+This repository represents the **missing link** between cognition and reality.
+
+---
+
+
