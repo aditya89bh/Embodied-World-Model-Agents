@@ -95,3 +95,33 @@ Define:
 This prevents impossible plans and grounds reasoning in physical constraints.
 
 ---
+
+### Project E4 – Imagination & Rollouts
+**Thinking Before Acting**
+
+Simulate future trajectories internally using the world-model.
+
+Capabilities:
+- multi-step rollouts
+- branching futures
+- uncertainty-aware planning
+
+Planning becomes **internal simulation**, not prompt chaining.
+
+---
+
+### Project E5 – Experience Memory for Worlds
+**Situational Learning**
+
+Store experiences as:
+- state
+- action
+- outcome
+- surprise or error
+
+Memory retrieval becomes context-aware:
+“What happened last time I tried this here?”
+
+This tightly couples world-models with memory agents.
+
+---
