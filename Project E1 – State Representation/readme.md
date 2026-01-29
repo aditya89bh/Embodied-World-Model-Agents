@@ -57,4 +57,32 @@ This state becomes the shared interface for:
 - imagination rollouts
 
 ---
+## Scope of Project E1
 
+Included:
+- grid-based or simple 2D environments
+- deterministic perception
+- partial observability
+- explicit belief updates
+- no learning or optimization
+
+Explicitly excluded:
+- reinforcement learning
+- neural world-models
+- robotics hardware
+- end-to-end policies
+
+This is a **representation-first** project.
+
+---
+
+## Repository Structure
+
+```text
+project_e1_state_representation/
+├── README.md
+├── state_schema.py      # WorldState definitions
+├── perception.py        # Observation extraction
+├── encoder.py           # Observation → WorldState
+├── examples.py          # Usage and demos
+└── tests.py             # Sanity checks
