@@ -16,3 +16,27 @@ Here, intelligence is no longer abstract.
 It is **situated**.
 
 ---
+
+## Why World Models?
+
+Most AI agents today:
+- reason in text
+- plan in symbols
+- hallucinate actions
+- ignore physics, cost, delay, and failure
+
+Real intelligence requires a **model of the world**:
+- what exists
+- how it changes
+- what actions are possible
+- what actions are costly or irreversible
+
+A world-model allows an agent to:
+- predict before acting
+- imagine futures
+- learn from surprise
+- ground planning in reality
+
+This repository treats **world-modeling as the bridge between cognition and embodiment**.
+
+---
