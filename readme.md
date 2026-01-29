@@ -40,3 +40,30 @@ A world-model allows an agent to:
 This repository treats **world-modeling as the bridge between cognition and embodiment**.
 
 ---
+
+## Core Idea
+
+World Models =  
+**Perception → State → Dynamics → Imagination → Action → Feedback → Memory**
+
+Every project in this repository implements one piece of that loop.
+
+Nothing is skipped. Nothing is assumed.
+
+---
+
+## Project Structure
+
+### Project E1 – State Representation (World → Latent)
+**Perception as Belief**
+
+Build a state encoder that converts raw observations into a compact, structured representation of the world.
+
+Focus:
+- what the agent believes exists
+- what is known vs unknown
+- uncertainty and partial observability
+
+Output is not pixels or text, but a **world state** the agent reasons over.
+
+---
