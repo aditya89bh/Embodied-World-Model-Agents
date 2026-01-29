@@ -27,3 +27,34 @@ Real-world intelligence requires a **state abstraction**:
 This project treats state as a **first-class cognitive object**, not a hidden tensor.
 
 ---
+
+## Core Idea
+
+Perception does not produce truth.  
+Perception produces **belief**.
+
+This project separates:
+- observation (what is sensed)
+- state (what is believed)
+- uncertainty (what is unknown)
+
+---
+
+## What This Project Builds
+
+A **WorldState** abstraction that includes:
+- agent state (position, energy, orientation)
+- environment layout
+- entities and their properties
+- constraints and impassable regions
+- uncertainty and partial observability
+- metadata such as timestep and source
+
+This state becomes the shared interface for:
+- planning agents
+- memory systems
+- world-model dynamics
+- imagination rollouts
+
+---
+
