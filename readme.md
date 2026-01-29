@@ -67,3 +67,31 @@ Focus:
 Output is not pixels or text, but a **world state** the agent reasons over.
 
 ---
+
+### Project E2 – Transition Model (Dynamics)
+**How the World Changes**
+
+Model how the world evolves given:
+- current state
+- chosen action
+
+Learn or simulate:
+- state transitions
+- stochastic outcomes
+- failure probabilities
+
+This is the foundation of prediction.
+
+---
+
+### Project E3 – Action Space & Constraints
+**What the Body Can and Cannot Do**
+
+Define:
+- available actions
+- invalid actions
+- action costs (time, energy, risk)
+
+This prevents impossible plans and grounds reasoning in physical constraints.
+
+---
