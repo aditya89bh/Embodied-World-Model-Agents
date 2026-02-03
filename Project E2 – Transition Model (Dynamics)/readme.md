@@ -30,3 +30,39 @@ A transition model allows an agent to:
 - support imagination rollouts in planning
 
 ---
+
+## Core Idea
+
+World Dynamics =  
+**Current State + Action → Next State + Outcome**
+
+This project formalizes that transformation.
+
+---
+
+## What This Project Builds
+
+Two complementary transition models:
+
+### 1. Rule-Based Transition Model
+A deterministic, environment-grounded transition function that:
+- applies physical constraints (walls, boundaries)
+- updates agent position
+- reveals new observations
+- serves as a trusted baseline
+
+This acts as the agent’s initial “physics engine”.
+
+---
+
+### 2. Learned Tabular Transition Model
+An experience-based world model that:
+- learns from `(state, action) → next_state`
+- stores transition frequencies
+- predicts the most likely next state
+- exposes uncertainty when data is sparse
+
+This is the agent’s first learned world-model.
+
+---
+
