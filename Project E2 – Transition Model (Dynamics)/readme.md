@@ -66,3 +66,16 @@ This is the agent’s first learned world-model.
 
 ---
 
+## Project Structure
+
+```text
+project_e2_transition_model/
+├── README.md
+├── env_gridworld.py              # Ground-truth environment dynamics
+├── state_adapter.py              # Minimal state abstraction for E2
+├── transition_rule_based.py      # Deterministic transition model
+├── transition_learned_tabular.py # Experience-based world model
+├── render.py                     # Truth vs belief visualization
+├── demo.py                       # End-to-end demo
+└── tests.py                      # Sanity checks
+
