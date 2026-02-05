@@ -24,3 +24,68 @@ An intelligent agent must:
 Without this, agents hallucinate competence.
 
 ---
+
+## Core Idea
+
+For every step:
+
+Imagined Outcome (E4)  
+vs  
+Actual Outcome (Reality)
+
+→ **Prediction Error**
+
+Prediction error is stored as experience:
+- what state the agent was in
+- what action it took
+- what it expected
+- what actually happened
+- how wrong it was
+
+This experience is then used to:
+- update transition confidence
+- increase perceived risk
+- bias future rollouts away from failures
+
+---
+
+## What This Project Builds
+
+### 1) Experience Record
+A structured memory entry:
+- state snapshot
+- action
+- predicted next state
+- actual next state
+- error magnitude
+
+### 2) Prediction Error Detector
+Logic to compare belief-space rollouts with real execution.
+
+### 3) Experience Memory Store
+A growing memory that:
+- indexes failures
+- tracks surprises
+- stores rare events
+
+### 4) Model Update Hooks
+Interfaces for:
+- adjusting rollout scores
+- penalizing overconfident actions
+- flagging unreliable transitions
+
+(No learning yet — just signal routing.)
+
+---
+
+## Project Structure
+
+```text
+project_e5_experience_memory/
+├── README.md
+├── experience.py            # Experience data structure
+├── error_metrics.py         # How wrong was the prediction?
+├── experience_store.py      # Memory of mismatches
+├── update_hooks.py          # How experience influences planning
+├── demo.py                  # Imagination vs reality loop
+└── tests.py                 # Sanity checks
