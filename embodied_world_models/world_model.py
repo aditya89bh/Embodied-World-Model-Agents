@@ -13,6 +13,20 @@ class TabularWorldModel:
 
         return max(self.transitions[key], key=self.transitions[key].get)
 
+    def confidence(self, state, action):
+        key = (state, action)
+
+        if key not in self.transitions or not self.transitions[key]:
+            return 0.0
+
+        total = sum(self.transitions[key].values())
+        best_count = max(self.transitions[key].values())
+        return best_count / total
+
+    def transition_count(self, state, action):
+        key = (state, action)
+        return sum(self.transitions[key].values()) if key in self.transitions else 0
+
     def update(self, state, action, actual_next):
         key = (state, action)
 
@@ -20,6 +34,13 @@ class TabularWorldModel:
             self.transitions[key][actual_next] = 0
 
         self.transitions[key][actual_next] += 1
+
+    def memory_trace(self):
+        rows = []
+        for (state, action), outcomes in sorted(self.transitions.items()):
+            for next_state, count in sorted(outcomes.items()):
+                rows.append(f"{state} + {action} -> {next_state} | count={count}")
+        return rows
 
     def _fallback(self, state, action):
         x, y = state
