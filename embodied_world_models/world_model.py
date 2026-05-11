@@ -53,6 +53,38 @@ class TabularWorldModel:
 
         self.transitions[key][actual_next] += 1
 
+    def to_dict(self):
+        payload = {}
+
+        for (state, action), outcomes in self.transitions.items():
+            key = f"{state[0]},{state[1]}|{action}"
+
+            payload[key] = {
+                f"{next_state[0]},{next_state[1]}": count
+                for next_state, count in outcomes.items()
+            }
+
+        return payload
+
+    @classmethod
+    def from_dict(cls, payload):
+        model = cls()
+
+        for encoded_key, outcomes in payload.items():
+            state_part, action = encoded_key.split('|')
+            sx, sy = state_part.split(',')
+            state = (int(sx), int(sy))
+
+            decoded_outcomes = {}
+
+            for encoded_state, count in outcomes.items():
+                nx, ny = encoded_state.split(',')
+                decoded_outcomes[(int(nx), int(ny))] = count
+
+            model.transitions[(state, action)] = decoded_outcomes
+
+        return model
+
     def memory_trace(self):
         rows = []
 
