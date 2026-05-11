@@ -3,6 +3,22 @@ from embodied_world_models.world_model import TabularWorldModel
 from embodied_world_models.agent import WorldModelAgent
 
 
+def print_frontiers(agent):
+    frontiers = agent.belief_map.frontier_cells()
+    print('Exploration frontiers:')
+
+    if not frontiers:
+        print('  - no active frontiers')
+        return
+
+    for frontier in frontiers[:5]:
+        print(
+            f"  - {frontier['position']} | "
+            f"unknown_neighbors={frontier['unknown_neighbors']} | "
+            f"information_gain={frontier['information_gain']}"
+        )
+
+
 def print_rollouts(candidates):
     print('Imagined rollouts:')
 
@@ -15,6 +31,7 @@ def print_rollouts(candidates):
             f"    distance={breakdown['distance_score']:.2f} "
             f"confidence={breakdown['confidence_bonus']:.2f} "
             f"movement={breakdown['movement_bonus']:.2f} "
+            f"exploration={breakdown['exploration_bonus']:.2f} "
             f"uncertainty_penalty={breakdown['uncertainty_penalty']:.2f}"
         )
 
@@ -32,8 +49,25 @@ def print_rollouts(candidates):
 
             print(f"      confidence: {step['confidence']:.2f}")
             print(f"      uncertainty: {step['uncertainty']:.2f}")
+            print(f"      information_gain: {step['information_gain']}")
 
     print()
+
+
+def print_exploration_motive(best):
+    best_gain = max(step['information_gain'] for step in best['rollout'])
+    best_step = max(best['rollout'], key=lambda step: step['information_gain'])
+
+    print('Exploration motive:')
+
+    if best_gain == 0:
+        print('  - selected action does not reveal new local information')
+        return
+
+    print(
+        f"  - selected action '{best['action']}' moves toward "
+        f"{best_step['next_state']} with expected information_gain={best_gain}"
+    )
 
 
 def print_belief_updates(updates):
@@ -58,10 +92,10 @@ def main():
 
     agent.observe()
 
-    print('\n=== Belief vs Reality World Model Demo ===\n')
+    print('\n=== Exploration-Aware World Model Demo ===\n')
     print(
-        'Core loop: observe -> update belief -> imagine -> '
-        'probabilistic prediction -> action -> update\n'
+        'Core loop: observe -> update belief -> detect frontiers -> '
+        'imagine -> score information gain -> act -> update\n'
     )
 
     for episode in range(1, 7):
@@ -74,12 +108,16 @@ def main():
         print()
         print('REALITY MAP')
         print(env.render_reality(agent.position))
+        print()
+        print_frontiers(agent)
 
         if agent.position == env.slippery_cell:
             print('\nAgent is currently on a slippery stochastic cell.')
 
         print()
         print_rollouts(candidates)
+        print_exploration_motive(best)
+        print()
 
         result = agent.act(best['action'])
 
