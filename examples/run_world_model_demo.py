@@ -3,6 +3,22 @@ from embodied_world_models.world_model import TabularWorldModel
 from embodied_world_models.agent import WorldModelAgent
 
 
+def print_persistent_memory_status(agent):
+    print('Persistent memory status:')
+
+    summary = agent.memory_summary()
+
+    if agent.memory_store.exists():
+        print('  - persistent memory detected')
+    else:
+        print('  - no existing persistent memory')
+
+    print(f"  - explored_cells={summary['explored_cells']}")
+    print(f"  - known_obstacles={summary['known_obstacles']}")
+    print(f"  - learned_transitions={summary['learned_transitions']}")
+    print()
+
+
 def print_frontiers(agent):
     frontiers = agent.belief_map.frontier_cells()
     print('Exploration frontiers:')
@@ -92,11 +108,13 @@ def main():
 
     agent.observe()
 
-    print('\n=== Exploration-Aware World Model Demo ===\n')
+    print('\n=== Persistent Embodied Learning Demo ===\n')
     print(
-        'Core loop: observe -> update belief -> detect frontiers -> '
-        'imagine -> score information gain -> act -> update\n'
+        'Core loop: observe -> belief update -> detect frontiers -> '
+        'imagine -> information gain -> act -> adapt -> persist\n'
     )
+
+    print_persistent_memory_status(agent)
 
     for episode in range(1, 7):
         best, candidates = agent.decide()
@@ -135,6 +153,13 @@ def main():
         print()
 
         print_belief_updates(result['belief_updates'])
+        print()
+
+        print('Persistent adaptation summary:')
+        summary = agent.memory_summary()
+        print(f"  - explored_cells={summary['explored_cells']}")
+        print(f"  - known_obstacles={summary['known_obstacles']}")
+        print(f"  - learned_transitions={summary['learned_transitions']}")
         print()
 
         print('Memory trace:')
