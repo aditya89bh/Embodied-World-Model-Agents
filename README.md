@@ -1,11 +1,11 @@
 # Embodied World Model Agents
 
-A minimal, interpretable repository for studying how embodied agents build internal models of the world, predict action outcomes, compare predictions with reality, store experience, reason under uncertainty, and adapt over time.
+A minimal, interpretable repository for studying how embodied agents build internal models of the world, predict action outcomes, compare predictions with reality, store experience, reason under uncertainty, seek information, and adapt over time.
 
 This repo is not a chatbot-agent playground. It focuses on the core loop required for physical intelligence:
 
 ```text
-observe -> belief update -> imagination -> prediction -> action -> observation -> prediction error -> memory -> model update
+observe -> belief update -> frontier detection -> imagination -> prediction -> action -> observation -> prediction error -> memory -> model update
 ```
 
 ## Why this matters
@@ -22,12 +22,13 @@ For robots and physical AI systems, intelligence depends on the ability to:
 - update future predictions
 - reason over probabilistic outcomes
 - separate internal belief from external reality
+- seek useful information through exploration
 
 This is the foundation of world-model based embodied intelligence.
 
 ## Current demo
 
-The repo includes a stochastic grid-world demo where an agent observes locally, updates an internal belief map, imagines possible futures, and acts under uncertainty.
+The repo includes a stochastic grid-world demo where an agent observes locally, updates an internal belief map, detects exploration frontiers, imagines possible futures, and acts under uncertainty.
 
 The environment contains:
 
@@ -35,8 +36,9 @@ The environment contains:
 - a slippery stochastic cell
 - probabilistic movement outcomes
 - partial observability through local sensing
+- unknown regions that motivate exploration
 
-The agent learns transition distributions from experience and uses confidence and uncertainty to score imagined rollouts.
+The agent learns transition distributions from experience and uses confidence, uncertainty, and information gain to score imagined rollouts.
 
 Run:
 
@@ -75,13 +77,41 @@ This makes partial observability visible.
 
 The agent does not receive the full map. It observes nearby cells, updates belief, and gradually constructs an internal model of the environment.
 
+## Exploration and information gain
+
+The agent now identifies exploration frontiers:
+
+```text
+known cells adjacent to unknown cells
+```
+
+It estimates information gain using the number of unknown neighboring cells and adds an exploration bonus to rollout scoring.
+
+```text
+score =
+  distance_reward
++ confidence_bonus
++ movement_bonus
++ exploration_bonus
+- uncertainty_penalty
+```
+
+The demo exposes this as an exploration motive:
+
+```text
+Exploration motive:
+  selected action 'right' moves toward (3,2) with expected information_gain=4
+```
+
+This makes curiosity-driven planning visible.
+
 ## Stochastic world model demo
 
 The demo shows candidate action rollouts like:
 
 ```text
 Action: right | total_score=-2.31
-  distance=-3.00 confidence=0.65 movement=0.20 uncertainty_penalty=0.54
+  distance=-3.00 confidence=0.65 movement=0.20 exploration=0.75 uncertainty_penalty=0.54
 
   (1,2) --right--> expected (2,2)
     distribution:
@@ -90,6 +120,7 @@ Action: right | total_score=-2.31
       (1,2): 0.15
     confidence: 0.65
     uncertainty: 0.82
+    information_gain: 3
 ```
 
 This makes the internal prediction process inspectable.
@@ -103,7 +134,7 @@ Environment
     v
 BeliefMap
     |
-    | internal world representation
+    | frontier detection + information gain
     v
 WorldModelAgent
     |
@@ -147,12 +178,14 @@ examples/
 tests/
 ├── test_world_model_demo.py
 ├── test_stochastic_world_model.py
-└── test_belief_map.py
+├── test_belief_map.py
+└── test_exploration.py
 
 docs/
 ├── architecture.md
 ├── stochastic_world_models.md
-└── belief_vs_reality.md
+├── belief_vs_reality.md
+└── exploration_and_information_gain.md
 
 project_e4_imagination_rollouts/
 project_e5_experience_memory/
@@ -171,6 +204,9 @@ The numbered `project_e*` folders preserve the earlier learning modules and expe
 | Belief map | What the agent currently thinks is true |
 | Unknown cell | A region the agent has not observed yet |
 | Local observation | Limited sensing around the agent |
+| Frontier | Known region adjacent to unknown space |
+| Information gain | Expected new knowledge from visiting a state |
+| Exploration bonus | Reward for moving toward informative states |
 | World model | Internal prediction system for action outcomes |
 | Action | A movement command such as `right`, `left`, `up`, `down` |
 | Observation | What the agent locally perceives after acting |
@@ -192,6 +228,8 @@ The numbered `project_e*` folders preserve the earlier learning modules and expe
 | Slippery cell | Motion uncertainty, wheel slip, object slip, tolerance error |
 | Belief map | Robot's internal workspace model |
 | Local observation | Camera, force, proximity, or state feedback |
+| Frontier | Boundary between known and unknown workspace |
+| Information gain | Value of sensing or testing a region |
 | Prediction | Expected result of a robot action |
 | Actual outcome | Sensor/state feedback after execution |
 | Prediction error | Difference between expected and observed result |
@@ -213,7 +251,8 @@ The repository is designed to grow through staged exercises:
 7. Estimate confidence and uncertainty.
 8. Plan under probabilistic outcomes.
 9. Maintain an internal belief map from local observations.
-10. Extend the loop toward richer embodied systems.
+10. Seek information through frontier-based exploration.
+11. Extend the loop toward richer embodied systems.
 
 ## What this repo demonstrates
 
@@ -221,7 +260,7 @@ This repo demonstrates the difference between a reactive agent and a world-model
 
 A reactive agent only acts.
 
-A world-model agent observes, updates belief, predicts, imagines, acts, compares, remembers, and adapts.
+A world-model agent observes, updates belief, detects frontiers, predicts, imagines, acts, compares, remembers, and adapts.
 
 That distinction is central to embodied AI, robotics, and physical AGI.
 
@@ -229,11 +268,10 @@ That distinction is central to embodied AI, robotics, and physical AGI.
 
 Planned improvements:
 
-- add exploration behavior
-- add information gain planning
 - add persistent memory serialization
 - add memory decay and confidence decay
 - add robotics-focused skill abstractions
+- add dynamic environment drift
 - add diagrams and demo traces
 - add CI for tests
 
