@@ -104,6 +104,25 @@ class BeliefMap:
     def is_unknown(self, position):
         return self.get(position) == UNKNOWN
 
+    def to_dict(self):
+        return {
+            'width': self.width,
+            'height': self.height,
+            'goal': list(self.goal),
+            'cells': self.cells,
+        }
+
+    @classmethod
+    def from_dict(cls, payload):
+        goal = tuple(payload['goal'])
+        belief = cls(
+            width=payload['width'],
+            height=payload['height'],
+            goal=goal,
+        )
+        belief.cells = payload['cells']
+        return belief
+
     def render(self, agent_position=None):
         rows = []
 
