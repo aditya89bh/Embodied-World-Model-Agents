@@ -3,6 +3,12 @@ FREE = '.'
 OBSTACLE = 'X'
 GOAL = 'G'
 
+OBSERVATION_TO_BELIEF = {
+    'free': FREE,
+    'obstacle': OBSTACLE,
+    'goal': GOAL,
+}
+
 
 class BeliefMap:
     def __init__(self, width=5, height=5, goal=(4, 4)):
@@ -22,6 +28,24 @@ class BeliefMap:
         if not self.in_bounds(position):
             return OBSTACLE
         return self.cells[y][x]
+
+    def update_from_observations(self, observations):
+        updates = []
+
+        for position, observed_type in observations.items():
+            new_value = OBSERVATION_TO_BELIEF[observed_type]
+            old_value = self.get(position)
+
+            if old_value != new_value:
+                self.mark(position, new_value)
+                updates.append({
+                    'position': position,
+                    'old': old_value,
+                    'new': new_value,
+                    'observed_type': observed_type,
+                })
+
+        return updates
 
     def in_bounds(self, position):
         x, y = position
