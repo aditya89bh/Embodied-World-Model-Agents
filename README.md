@@ -1,11 +1,11 @@
 # Embodied World Model Agents
 
-A minimal, interpretable repository for studying how embodied agents build internal models of the world, predict action outcomes, compare predictions with reality, store experience, reason under uncertainty, seek information, and adapt over time.
+A minimal, interpretable repository for studying how embodied agents build internal models of the world, predict action outcomes, compare predictions with reality, store experience, reason under uncertainty, seek information, persist memory, and adapt over time.
 
 This repo is not a chatbot-agent playground. It focuses on the core loop required for physical intelligence:
 
 ```text
-observe -> belief update -> frontier detection -> imagination -> prediction -> action -> observation -> prediction error -> memory -> model update
+observe -> belief update -> frontier detection -> imagination -> prediction -> action -> observation -> prediction error -> memory update -> persistent storage
 ```
 
 ## Why this matters
@@ -23,12 +23,13 @@ For robots and physical AI systems, intelligence depends on the ability to:
 - reason over probabilistic outcomes
 - separate internal belief from external reality
 - seek useful information through exploration
+- preserve experience across executions
 
 This is the foundation of world-model based embodied intelligence.
 
 ## Current demo
 
-The repo includes a stochastic grid-world demo where an agent observes locally, updates an internal belief map, detects exploration frontiers, imagines possible futures, and acts under uncertainty.
+The repo includes a stochastic grid-world demo where an agent observes locally, updates an internal belief map, detects exploration frontiers, imagines possible futures, acts under uncertainty, and persists learned experience.
 
 The environment contains:
 
@@ -37,8 +38,9 @@ The environment contains:
 - probabilistic movement outcomes
 - partial observability through local sensing
 - unknown regions that motivate exploration
+- persistent memory across executions
 
-The agent learns transition distributions from experience and uses confidence, uncertainty, and information gain to score imagined rollouts.
+The agent learns transition distributions from experience and uses confidence, uncertainty, information gain, and persisted memory to score imagined rollouts.
 
 Run:
 
@@ -52,6 +54,30 @@ Run tests:
 ```bash
 pytest
 ```
+
+## Persistent memory and adaptation
+
+The agent now persists experience across runs.
+
+It saves:
+
+- belief map state
+- explored regions
+- discovered obstacles
+- learned transition counts
+- probabilistic world model memory
+
+Example demo trace:
+
+```text
+Persistent memory status:
+  - persistent memory detected
+  - explored_cells=18
+  - known_obstacles=2
+  - learned_transitions=37
+```
+
+This shifts the system from single-session learning to long-term adaptation.
 
 ## Belief vs reality
 
@@ -79,7 +105,7 @@ The agent does not receive the full map. It observes nearby cells, updates belie
 
 ## Exploration and information gain
 
-The agent now identifies exploration frontiers:
+The agent identifies exploration frontiers:
 
 ```text
 known cells adjacent to unknown cells
@@ -155,7 +181,10 @@ Action execution
 Prediction error + memory update
     |
     v
-Improved future prediction
+PersistentMemoryStore
+    |
+    v
+Improved future prediction across runs
 ```
 
 ## Repo structure
@@ -169,6 +198,7 @@ embodied_world_models/
 ├── belief_map.py
 ├── world_model.py
 ├── rollout_planner.py
+├── persistent_memory.py
 ├── visualization.py
 └── agent.py
 
@@ -179,13 +209,15 @@ tests/
 ├── test_world_model_demo.py
 ├── test_stochastic_world_model.py
 ├── test_belief_map.py
-└── test_exploration.py
+├── test_exploration.py
+└── test_persistent_memory.py
 
 docs/
 ├── architecture.md
 ├── stochastic_world_models.md
 ├── belief_vs_reality.md
-└── exploration_and_information_gain.md
+├── exploration_and_information_gain.md
+└── persistent_memory_and_adaptation.md
 
 project_e4_imagination_rollouts/
 project_e5_experience_memory/
@@ -207,6 +239,7 @@ The numbered `project_e*` folders preserve the earlier learning modules and expe
 | Frontier | Known region adjacent to unknown space |
 | Information gain | Expected new knowledge from visiting a state |
 | Exploration bonus | Reward for moving toward informative states |
+| Persistent memory | Stored experience reused across executions |
 | World model | Internal prediction system for action outcomes |
 | Action | A movement command such as `right`, `left`, `up`, `down` |
 | Observation | What the agent locally perceives after acting |
@@ -230,6 +263,7 @@ The numbered `project_e*` folders preserve the earlier learning modules and expe
 | Local observation | Camera, force, proximity, or state feedback |
 | Frontier | Boundary between known and unknown workspace |
 | Information gain | Value of sensing or testing a region |
+| Persistent memory | Deployment memory across cycles |
 | Prediction | Expected result of a robot action |
 | Actual outcome | Sensor/state feedback after execution |
 | Prediction error | Difference between expected and observed result |
@@ -252,7 +286,8 @@ The repository is designed to grow through staged exercises:
 8. Plan under probabilistic outcomes.
 9. Maintain an internal belief map from local observations.
 10. Seek information through frontier-based exploration.
-11. Extend the loop toward richer embodied systems.
+11. Persist memory across executions.
+12. Extend the loop toward richer embodied systems.
 
 ## What this repo demonstrates
 
@@ -260,7 +295,7 @@ This repo demonstrates the difference between a reactive agent and a world-model
 
 A reactive agent only acts.
 
-A world-model agent observes, updates belief, detects frontiers, predicts, imagines, acts, compares, remembers, and adapts.
+A world-model agent observes, updates belief, detects frontiers, predicts, imagines, acts, compares, remembers, persists, and adapts.
 
 That distinction is central to embodied AI, robotics, and physical AGI.
 
@@ -268,7 +303,6 @@ That distinction is central to embodied AI, robotics, and physical AGI.
 
 Planned improvements:
 
-- add persistent memory serialization
 - add memory decay and confidence decay
 - add robotics-focused skill abstractions
 - add dynamic environment drift
