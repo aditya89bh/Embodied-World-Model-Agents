@@ -47,6 +47,49 @@ class BeliefMap:
 
         return updates
 
+    def frontier_cells(self):
+        frontiers = []
+
+        for y in range(self.height):
+            for x in range(self.width):
+                position = (x, y)
+                value = self.get(position)
+
+                if value not in (FREE, GOAL):
+                    continue
+
+                unknown_neighbors = [
+                    neighbor
+                    for neighbor in self.neighbors(position)
+                    if self.is_unknown(neighbor)
+                ]
+
+                if unknown_neighbors:
+                    frontiers.append({
+                        'position': position,
+                        'unknown_neighbors': unknown_neighbors,
+                        'information_gain': len(unknown_neighbors),
+                    })
+
+        return frontiers
+
+    def information_gain(self, position):
+        return sum(
+            1 for neighbor in self.neighbors(position)
+            if self.is_unknown(neighbor)
+        )
+
+    def neighbors(self, position):
+        x, y = position
+        candidates = [
+            (x + 1, y),
+            (x - 1, y),
+            (x, y + 1),
+            (x, y - 1),
+        ]
+
+        return [candidate for candidate in candidates if self.in_bounds(candidate)]
+
     def in_bounds(self, position):
         x, y = position
         return 0 <= x < self.width and 0 <= y < self.height
