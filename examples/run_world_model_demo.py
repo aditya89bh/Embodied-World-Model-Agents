@@ -1,7 +1,6 @@
 from embodied_world_models.stochastic_gridworld import StochasticGridWorld
 from embodied_world_models.world_model import TabularWorldModel
 from embodied_world_models.agent import WorldModelAgent
-from embodied_world_models.visualization import render_grid
 
 
 def print_rollouts(candidates):
@@ -37,15 +36,32 @@ def print_rollouts(candidates):
     print()
 
 
+def print_belief_updates(updates):
+    print('Belief updates:')
+
+    if not updates:
+        print('  - no new belief changes')
+        return
+
+    for update in updates:
+        print(
+            f"  - {update['position']}: "
+            f"{update['old']} -> {update['new']} "
+            f"({update['observed_type']})"
+        )
+
+
 def main():
     env = StochasticGridWorld()
     model = TabularWorldModel()
     agent = WorldModelAgent(env, model)
 
-    print('\n=== Stochastic Embodied World Model Demo ===\n')
+    agent.observe()
+
+    print('\n=== Belief vs Reality World Model Demo ===\n')
     print(
-        'Core loop: imagination -> probabilistic prediction -> '
-        'action -> observation -> update\n'
+        'Core loop: observe -> update belief -> imagine -> '
+        'probabilistic prediction -> action -> update\n'
     )
 
     for episode in range(1, 7):
@@ -53,7 +69,11 @@ def main():
 
         print(f'Episode {episode}')
         print()
-        print(render_grid(agent.position, env.hidden_block))
+        print('BELIEF MAP')
+        print(agent.belief_map.render(agent.position))
+        print()
+        print('REALITY MAP')
+        print(env.render_reality(agent.position))
 
         if agent.position == env.slippery_cell:
             print('\nAgent is currently on a slippery stochastic cell.')
@@ -74,6 +94,9 @@ def main():
         print(f"Prediction confidence: {confidence:.2f}")
         print(f"Prediction uncertainty:{uncertainty:.2f}")
         print(f"Transition memory:     {memory_count}")
+        print()
+
+        print_belief_updates(result['belief_updates'])
         print()
 
         print('Memory trace:')

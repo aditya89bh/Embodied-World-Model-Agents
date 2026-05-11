@@ -5,7 +5,7 @@ A minimal, interpretable repository for studying how embodied agents build inter
 This repo is not a chatbot-agent playground. It focuses on the core loop required for physical intelligence:
 
 ```text
-belief -> imagination -> prediction -> action -> observation -> prediction error -> memory -> model update
+observe -> belief update -> imagination -> prediction -> action -> observation -> prediction error -> memory -> model update
 ```
 
 ## Why this matters
@@ -21,18 +21,20 @@ For robots and physical AI systems, intelligence depends on the ability to:
 - remember experience
 - update future predictions
 - reason over probabilistic outcomes
+- separate internal belief from external reality
 
 This is the foundation of world-model based embodied intelligence.
 
 ## Current demo
 
-The repo includes a stochastic grid-world demo where an agent imagines possible futures before acting.
+The repo includes a stochastic grid-world demo where an agent observes locally, updates an internal belief map, imagines possible futures, and acts under uncertainty.
 
 The environment contains:
 
 - a hidden blocked cell
 - a slippery stochastic cell
 - probabilistic movement outcomes
+- partial observability through local sensing
 
 The agent learns transition distributions from experience and uses confidence and uncertainty to score imagined rollouts.
 
@@ -48,6 +50,30 @@ Run tests:
 ```bash
 pytest
 ```
+
+## Belief vs reality
+
+The demo explicitly separates what actually exists from what the agent currently knows.
+
+```text
+BELIEF MAP
+? ? ? ? ?
+? A X ? ?
+? . . ? ?
+? ? ? ? ?
+? ? ? ? G
+
+REALITY MAP
+. . . . .
+. A X . .
+. S . . .
+. . . . .
+. . . . G
+```
+
+This makes partial observability visible.
+
+The agent does not receive the full map. It observes nearby cells, updates belief, and gradually constructs an internal model of the environment.
 
 ## Stochastic world model demo
 
@@ -73,6 +99,11 @@ This makes the internal prediction process inspectable.
 ```text
 Environment
     |
+    | local observation
+    v
+BeliefMap
+    |
+    | internal world representation
     v
 WorldModelAgent
     |
@@ -104,6 +135,7 @@ embodied_world_models/
 ├── state.py
 ├── environment.py
 ├── stochastic_gridworld.py
+├── belief_map.py
 ├── world_model.py
 ├── rollout_planner.py
 ├── visualization.py
@@ -114,11 +146,13 @@ examples/
 
 tests/
 ├── test_world_model_demo.py
-└── test_stochastic_world_model.py
+├── test_stochastic_world_model.py
+└── test_belief_map.py
 
 docs/
 ├── architecture.md
-└── stochastic_world_models.md
+├── stochastic_world_models.md
+└── belief_vs_reality.md
 
 project_e4_imagination_rollouts/
 project_e5_experience_memory/
@@ -133,10 +167,13 @@ The numbered `project_e*` folders preserve the earlier learning modules and expe
 
 | Concept | Meaning in this repo |
 |---|---|
-| Belief state | What the agent currently thinks about the world |
+| Reality map | The actual environment |
+| Belief map | What the agent currently thinks is true |
+| Unknown cell | A region the agent has not observed yet |
+| Local observation | Limited sensing around the agent |
 | World model | Internal prediction system for action outcomes |
 | Action | A movement command such as `right`, `left`, `up`, `down` |
-| Observation | What actually happened after acting |
+| Observation | What the agent locally perceives after acting |
 | Prediction error | Mismatch between predicted and actual outcome |
 | Experience memory | Stored transitions from past action attempts |
 | Adaptation | Updating the model so future predictions improve |
@@ -153,6 +190,8 @@ The numbered `project_e*` folders preserve the earlier learning modules and expe
 | Action | Motion primitive or skill |
 | Hidden block | Fixture, collision zone, machine constraint, or unexpected obstacle |
 | Slippery cell | Motion uncertainty, wheel slip, object slip, tolerance error |
+| Belief map | Robot's internal workspace model |
+| Local observation | Camera, force, proximity, or state feedback |
 | Prediction | Expected result of a robot action |
 | Actual outcome | Sensor/state feedback after execution |
 | Prediction error | Difference between expected and observed result |
@@ -173,7 +212,8 @@ The repository is designed to grow through staged exercises:
 6. Adapt the transition model from prediction errors.
 7. Estimate confidence and uncertainty.
 8. Plan under probabilistic outcomes.
-9. Extend the loop toward richer embodied systems.
+9. Maintain an internal belief map from local observations.
+10. Extend the loop toward richer embodied systems.
 
 ## What this repo demonstrates
 
@@ -181,7 +221,7 @@ This repo demonstrates the difference between a reactive agent and a world-model
 
 A reactive agent only acts.
 
-A world-model agent predicts, imagines, acts, compares, remembers, and adapts.
+A world-model agent observes, updates belief, predicts, imagines, acts, compares, remembers, and adapts.
 
 That distinction is central to embodied AI, robotics, and physical AGI.
 
@@ -189,9 +229,8 @@ That distinction is central to embodied AI, robotics, and physical AGI.
 
 Planned improvements:
 
-- add explicit belief vs reality maps
-- add unknown cells and partial observability
 - add exploration behavior
+- add information gain planning
 - add persistent memory serialization
 - add memory decay and confidence decay
 - add robotics-focused skill abstractions
