@@ -3,8 +3,9 @@ GOAL = (4, 4)
 
 
 class RolloutPlanner:
-    def __init__(self, model, actions=None, horizon=3):
+    def __init__(self, model, belief_map=None, actions=None, horizon=3):
         self.model = model
+        self.belief_map = belief_map
         self.actions = actions or ACTIONS
         self.horizon = horizon
 
@@ -34,6 +35,7 @@ class RolloutPlanner:
             confidence = self.model.confidence(state, action)
             uncertainty = self.model.uncertainty(state, action)
             distribution = self.model.distribution(state, action)
+            information_gain = self._information_gain(next_state)
 
             trace.append({
                 'state': state,
@@ -42,6 +44,7 @@ class RolloutPlanner:
                 'confidence': confidence,
                 'uncertainty': uncertainty,
                 'distribution': distribution,
+                'information_gain': information_gain,
             })
 
             state = next_state
@@ -53,19 +56,32 @@ class RolloutPlanner:
         distance_score = -self._manhattan(final_state, GOAL)
         confidence_bonus = sum(step['confidence'] for step in rollout) / len(rollout)
         uncertainty_penalty = sum(step['uncertainty'] for step in rollout) / len(rollout)
+        exploration_bonus = sum(step['information_gain'] for step in rollout) * 0.25
         movement_bonus = sum(
             1 for step in rollout if step['state'] != step['next_state']
         ) * 0.1
 
-        total = distance_score + confidence_bonus + movement_bonus - uncertainty_penalty
+        total = (
+            distance_score
+            + confidence_bonus
+            + movement_bonus
+            + exploration_bonus
+            - uncertainty_penalty
+        )
 
         return {
             'distance_score': distance_score,
             'confidence_bonus': confidence_bonus,
             'movement_bonus': movement_bonus,
+            'exploration_bonus': exploration_bonus,
             'uncertainty_penalty': uncertainty_penalty,
             'total': total,
         }
+
+    def _information_gain(self, state):
+        if self.belief_map is None:
+            return 0
+        return self.belief_map.information_gain(state)
 
     def _greedy_goal_action(self, state):
         x, y = state
